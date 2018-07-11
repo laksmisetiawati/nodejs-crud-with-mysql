@@ -1,5 +1,5 @@
 # README #
-Node.js simple CRUD application with MySQL
+Node.js simple CRUD application with MySQL   
 
 
 
@@ -9,17 +9,18 @@ Node.js simple CRUD application with MySQL
 * [MySQL](https://www.mysql.com/) - | version ^2.15.0
 * [Express](https://expressjs.com/) - A minimal and flexible Node.js web application framework that provides a robust set of features for web and mobile applications | version 4.16.3
 * [Express Validator]() - | version 5.2.0
+* [Express Myconnection]() - | version 1.0.4
 * [EJS](http://ejs.co/) - A simple templating language that lets you generate HTML markup with plain JavaScript. | version 2.6.1
-* [body-parser]() - | version 1.18.3
+* [body-parser]() - | version 1.18.3   
 
 
 
 ## Getting started
 
-### Staring with Node.js setup
+### Starting with Node.js setup
 Run `npm init` command. This command will create `package.json` file that will be installed.   
 After run `npm init` you will be asked about application detail e.g:
-```
+```cmd
 package name: (crud-with-mysql) crud-with-mysql
 version: (1.0.0)
 description: create crud with mysql
@@ -53,9 +54,10 @@ In the app.js that you just created, write some code e.g
 console.log('Hello World')
 ```
 and then run `node index.js`. You will see statement you logged:
-```
+```js
 Hello World
 ```
+
 
 
 ### Working with Nodemon
@@ -92,52 +94,51 @@ Next, you need to create `nodemon.json` in main path and write below code:
 	"ext": "js json"
 }
 ```
-I'm not sure how to write proper code on `nodemon.json` but that one works lol. I'll learn more later ;)   
 And do not forget to add `start` on `package.json` `scripts` e.g:
-```javascript
+```js
 "scripts": {
 	"start": "nodemon index.js"
 },
 ```
 After that, you can start the application by run command
-```
+```node
 npm start
 ```
-It will automatically restart application if have any change
+It will automatically restart application if have any change.   
 
 
 ### Working with Express
 We will use Expressjs to help us build website easier. We will also use Express' middleware such as session, validation, etc but later.   
 Install Express with below command:
-```
+```node
 npm install express --save
 ```
 Open index.js and add below code at first line:
-```
+```js
 var express = require('express');
 const app = express();
 ```
 Also add below code for simple rooting:
-```
+```js
 app.get('/', (req, res) => res.send('Hello!'))
 ```
 And setup server port by adding 
-```
+```js
 app.listen(3000,function(){
 	console.log('Server running @ http://localhost:3000')
 });
 ```
-Start node and try to open url http://localhost:3000
+Start node and try to open url http://localhost:3000   
 
 
 ### Working with ejs
 EJS will help to generate HTML markup with plain JavaScript.   
-To download EJS, copy-paster below command:
-```
+To download EJS, copy-paste below command:
+```node
 npm install ejs --save
 ```
 Edit index.js and add 
-```
+```js
 //specified default view engine
 app.engine('ejs', require('ejs').renderFile);
 app.set('view engine', 'ejs');
@@ -147,7 +148,7 @@ app.set('views', __dirname + '/public/views');
 ```
 It will setting up the templating view engine.   
 Then, lets create folder app. We will use it to storage application files, such as controllers, models, and router.js. Create router.js in this folder and add below code:
-```
+```js
 var express = require('express');
 var path = require('path');
 
@@ -163,7 +164,7 @@ module.exports = function(app, express) {
 }
 ```
 On index.js, remove router `app.get('/', (req, res) => res.send('Hello!'))` and change to:
-```
+```js
 //get Router from folder app
 var apiRouter = require('./app/router.js')(app, express);
 app.use('/', apiRouter);
@@ -192,6 +193,81 @@ and create `footer.ejs` in layouts folder with below code:
 
 	</footer>
 </html>
+```
+
+
+
+### Working with Database
+First we must install MySQL:
+```node
+npm install mysql --save
+```
+Create new database. I will name it rentaldisk
+```mysql
+create database rentaldisk;
+```
+Then, create new table. I will use 'disk'
+```mysql
+use rentaldisk;
+ 
+CREATE TABLE disk (
+	id int(11) NOT NULL auto_increment,
+	name varchar(255) NOT NULL,
+	synopsis text null,
+	PRIMARY KEY (id)
+);
+```
+Create new folder `config`, We will use this as configuration, then create `db.js` for MySQL configuration
+```js
+var config = {
+    database: {
+        host        : 'localhost',
+        user        : 'root',
+        password    : 'admin',
+        port        : 3306,
+        db          : 'test'
+    },
+    server: {
+        host: '127.0.0.1',
+        port: '3000'
+    }
+}
+
+module.exports = config
+```
+Before setup database configuration on index.js, we need to install express-myconnection.   
+express-myconnection is Express' middleware to provides a consistent API for MySQL connections during request/response life cycle.   
+Install express-myconnection with shown command below:
+```node
+npm install express-myconnection --save
+```
+Open index.js and add below code:
+```js
+var mysql = require('mysql');
+var sqlConnection  = require('express-myconnection');
+var config = require('./config/db')
+var db = {
+    host		: config.database.host,
+    user		: config.database.user,
+    password	: config.database.password,
+    port		: config.database.port, 
+    database	: config.database.db
+}
+app.use(sqlConnection(mysql, db, 'single'));
+```
+strategies on express-myconnection `app.use(sqlConnection(mysql, db, *'single'*));`:
+- single - creates single database connection for an application instance. Connection is never closed. In case of disconnection it will try to reconnect again as described in node-mysql docs.
+- pool - creates pool of connections on an app instance level, and serves a single connection from pool per request. The connections is auto released to the pool at the response end.
+- request - creates new connection per each request, and automatically closes it at the response end.
+
+
+
+### Working with body-parser
+We need body-parser as middleware module to handle HTTP POST when read form input.   
+body-parser is needed because we use Express version 4 above.   
+Install body-parser as shown below:
+```
+npm install body-parser --save
 ```
 
 
