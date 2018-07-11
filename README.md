@@ -255,7 +255,7 @@ var db = {
 }
 app.use(sqlConnection(mysql, db, 'single'));
 ```
-strategies on express-myconnection `app.use(sqlConnection(mysql, db, *'single'*));`:
+strategies on express-myconnection `app.use(sqlConnection(mysql, db, '**single**'));`:
 - single - creates single database connection for an application instance. Connection is never closed. In case of disconnection it will try to reconnect again as described in node-mysql docs.
 - pool - creates pool of connections on an app instance level, and serves a single connection from pool per request. The connections is auto released to the pool at the response end.
 - request - creates new connection per each request, and automatically closes it at the response end.
