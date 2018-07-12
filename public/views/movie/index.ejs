@@ -1,0 +1,43 @@
+<%- include ../layouts/header.ejs %>
+	<body>
+		
+		<% if (messages.error) { %>
+			<p style="color:red"><%- messages.error %></p>
+		<% } %>
+		<% if (messages.success) { %>
+			<p style="color:green"><%- messages.success %></p>
+		<% } %>
+
+		<div>Movie List</div>
+		<a href="/movie/add">Add</a>
+		<table>
+ 
+		    <tr style='text-align:left; background-color:#CCC'>
+		    	<th>No</th>
+		        <th>Name</th>
+		        <th>Synopsis</th>
+		        <th>Action</th>
+		    </tr>
+			<% if(data) { %>
+				<% data.forEach(function(d, key){ %>
+					<tr>
+						<td><%= key+1 %></td>
+						<td><%= d.name %></td>
+						<td><%= d.synopsis %></td>
+						<td>
+						<div style="float:left">
+						<a href='/movie/edit/<%= d.id %>'>Edit</a> &nbsp;                            
+						<form method="post" action="/movie/delete/<%= d.id %>" style="float:right">
+							<input type="submit" name="delete" value='Delete' onClick="return confirm('Are you sure you want to delete?')" />
+							<input type="hidden" name="_method" value="DELETE" />
+						</form>
+						</div>
+						</td>
+					</tr>
+				<% }) %>
+			<% } %>
+
+		</table>
+	
+	</body>
+<%- include ../layouts/footer.ejs %>

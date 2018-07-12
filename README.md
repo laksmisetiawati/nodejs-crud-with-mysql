@@ -147,7 +147,7 @@ app.set('view engine', 'ejs');
 app.set('views', __dirname + '/public/views');
 ```
 It will setting up the templating view engine.   
-Then, lets create folder app. We will use it to storage application files, such as controllers, models, and router.js. Create router.js in this folder and add below code:
+Then, lets create folder routers. We will use it to storage all routers. Create index.js in this folder as main router and add below code:
 ```js
 var express = require('express');
 var path = require('path');
@@ -165,9 +165,9 @@ module.exports = function(app, express) {
 ```
 On index.js, remove router `app.get('/', (req, res) => res.send('Hello!'))` and change to:
 ```js
-//get Router from folder app
-var apiRouter = require('./app/router.js')(app, express);
-app.use('/', apiRouter);
+//get Router from folder router
+var indexRouter = require('./routers/index.js')(app, express);
+app.use('/', indexRouter);
 ```
 Lets start to create simple hello world view.   
 Create folder `public/views/home` and create file ejs `index.ejs` in home folder, and insert below code:
@@ -225,7 +225,7 @@ var config = {
         user        : 'root',
         password    : 'admin',
         port        : 3306,
-        db          : 'test'
+        db          : 'rentaldisk'
     },
     server: {
         host: '127.0.0.1',
@@ -259,6 +259,14 @@ strategies on express-myconnection app.use(sqlConnection(mysql, db, **'single'**
 - single - creates single database connection for an application instance. Connection is never closed. In case of disconnection it will try to reconnect again as described in node-mysql docs.
 - pool - creates pool of connections on an app instance level, and serves a single connection from pool per request. The connections is auto released to the pool at the response end.
 - request - creates new connection per each request, and automatically closes it at the response end.
+
+
+### Starting Read Database
+Create movie.js on routers folder. It will be router for movie CRUD and add below code: 
+```
+
+
+```
 
 
 
@@ -307,4 +315,12 @@ npm install body-parser --save
 	npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@1.2.4 (node_modules\fsevents):
 	npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@1.2.4: wanted {"os":"darwin","arch":"any"} (current: {"os":"win32","arch":"x64"})
 	```
-	when installing package, just ignore it. fsevents is a package for OS to allows applications to register for notifications of changes to a given directory tree. It is a very fast and lightweight alternative to kqueue.
+	when installing package, just ignore it. fsevents is a package for OS to allows applications to register for notifications of changes to a given directory tree tt is a very fast and lightweight alternative to kqueue.
+
+
+
+---
+
+
+
+# **I WILL UPDATE README LATER** #

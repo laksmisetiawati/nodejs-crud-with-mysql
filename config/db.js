@@ -2,9 +2,9 @@ var config = {
     database: {
         host        : 'localhost',
         user        : 'root',
-        password    : 'admin',
+        password    : 'password',
         port        : 3306,
-        db          : 'test'
+        db          : 'rentaldisk'
     },
     server: {
         host: '127.0.0.1',
