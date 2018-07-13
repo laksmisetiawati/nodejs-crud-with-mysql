@@ -1,17 +1,18 @@
 # README #
-Node.js simple CRUD application with MySQL   
+Build Node.js simple CRUD web application with MySQL   
 
 
 
 ## Built With ##
-* [Node.js](https://nodejs.org/) - Cross-platform JavaScript run-time environment that executes JavaScript code server-side. | version 5.6.0
-* [Nodemon](https://nodemon.io/) - A utility that will monitor for any changes in your source and automatically restart your server. | version ^1.18.0
+* [Node.js](https://nodejs.org/) - Cross-platform JavaScript run-time environment that executes JavaScript code server-side | version 5.6.0
+* [Nodemon](https://nodemon.io/) - A utility that will monitor for any changes in your source and automatically restart your server | version ^1.18.0
 * [MySQL](https://www.mysql.com/) - | version ^2.15.0
 * [Express](https://expressjs.com/) - A minimal and flexible Node.js web application framework that provides a robust set of features for web and mobile applications | version 4.16.3
-* [Express Validator]() - | version 5.2.0
-* [Express Myconnection]() - | version 1.0.4
+* [Express Validator](https://www.npmjs.com/package/express-validator) - | version 5.2.0
+* [Express Myconnection](https://www.npmjs.com/package/express-myconnection) - Connect/Express middleware provides a consistent API for MySQL connections during request/response life cycle | version 1.0.4
 * [EJS](http://ejs.co/) - A simple templating language that lets you generate HTML markup with plain JavaScript. | version 2.6.1
-* [body-parser]() - | version 1.18.3   
+* [body-parser](https://www.npmjs.com/package/body-parser) - Parse incoming request bodies in a middleware before your handlers, available under the req.body property | version 1.18.3  
+* [cookie-parser](https://www.npmjs.com/package/cookie-parser) - Parse Cookie header and populate req.cookies with an object keyed by the cookie names | version ^1.4.3
 
 
 
@@ -61,16 +62,12 @@ Hello World
 
 
 ### Working with Nodemon
-We need Nodemon to make application keep running even we made change. So we do not need to restart it.   
+We need Nodemon to make application keep running even we made change. So we do not need to restart it after we make change.   
 First, we have to install them by run below command:
 ```node
 npm install nodemon --save
 ```
-Once done, you will see that npm has saved Nodemon as a dependency in `package.json`
-```json
-"nodemon": "^1.18.0"
-```
-Next, you need to create `nodemon.json` in main path and write below code:
+Once done, you need to create `nodemon.json` in main path and write below code:
 ```json
 {
 	"restartable": "rs",
@@ -120,15 +117,18 @@ const app = express();
 ```
 Also add below code for simple rooting:
 ```js
-app.get('/', (req, res) => res.send('Hello!'))
+router.get('/',function(req,res){
+	res.send('Hello!');
+})
 ```
+or you can use `app.get('/', (req, res) => res.send('Hello!'))` for short code :)   
 And setup server port by adding 
 ```js
 app.listen(3000,function(){
 	console.log('Server running @ http://localhost:3000')
 });
 ```
-Start node and try to open url http://localhost:3000   
+Start node and try to open url `http://localhost:3000`   
 
 
 ### Working with ejs
@@ -137,7 +137,7 @@ To download EJS, copy-paste below command:
 ```node
 npm install ejs --save
 ```
-Edit index.js and add 
+Edit index.js and add: 
 ```js
 //specified default view engine
 app.engine('ejs', require('ejs').renderFile);
@@ -147,44 +147,41 @@ app.set('view engine', 'ejs');
 app.set('views', __dirname + '/public/views');
 ```
 It will setting up the templating view engine.   
-Then, lets create folder routers. We will use it to storage all routers. Create index.js in this folder as main router and add below code:
+Then, lets create folder routers. We will use it to storage all routers. Create main.js in this folder as main router and add below code:
 ```js
 var express = require('express');
-var path = require('path');
+var router = express.Router();
 
-module.exports = function(app, express) {
-	var router = express();
-	
-	//routing
-	app.get('/',function(req,res){
-		res.render('home/index');
-	})
+router.get('/',function(req,res){
+	res.render('home/index', {
+		title: 'Home'
+	});
+})
 
-	return router;
-}
+module.exports = router;
 ```
 On index.js, remove router `app.get('/', (req, res) => res.send('Hello!'))` and change to:
 ```js
 //get Router from folder router
-var indexRouter = require('./routers/index.js')(app, express);
-app.use('/', indexRouter);
+var router = express.Router();
+var mainRouter = require('./routers/main');
+app.use('/', mainRouter);
 ```
 Lets start to create simple hello world view.   
 Create folder `public/views/home` and create file ejs `index.ejs` in home folder, and insert below code:
 ```html
 <%- include ../layouts/header.ejs %>
-
 	<body>
 		<div>Hello World!</div>
 	</body>
-	
 <%- include ../layouts/footer.ejs %>
 ```
-Then, create folder `layouts` in public/views folder, and create `header.ejs` with below code:
+Then, create folder `layouts` in `public/views` folder, and create `header.ejs` with below code:
 ```html
 <html>
 	<head>
-		<title>Node.JS with EJS</title>
+		<title><%= title %></title>
+		<!-- css & js plugin will goes here -->
 	</head>
 ```
 and create `footer.ejs` in layouts folder with below code:
@@ -194,6 +191,7 @@ and create `footer.ejs` in layouts folder with below code:
 	</footer>
 </html>
 ```
+`<%= ... %>` will print every datas   
 
 
 
@@ -209,7 +207,6 @@ create database rentaldisk;
 Then, create new table. I will use 'disk'
 ```mysql
 use rentaldisk;
- 
 CREATE TABLE disk (
 	id int(11) NOT NULL auto_increment,
 	name varchar(255) NOT NULL,
@@ -222,8 +219,8 @@ Create new folder `config`, We will use this as configuration, then create `db.j
 var config = {
     database: {
         host        : 'localhost',
-        user        : 'root',
-        password    : 'admin',
+        user        : 'yourusername',
+        password    : 'yourpasssword',
         port        : 3306,
         db          : 'rentaldisk'
     },
@@ -243,16 +240,16 @@ npm install express-myconnection --save
 ```
 Open index.js and add below code:
 ```js
+var sqlConfig = require('./config/db');
 var mysql = require('mysql');
 var sqlConnection  = require('express-myconnection');
-var config = require('./config/db')
 var db = {
-    host		: config.database.host,
-    user		: config.database.user,
-    password	: config.database.password,
-    port		: config.database.port, 
-    database	: config.database.db
-}
+	host		: sqlConfig.database.host,
+	user		: sqlConfig.database.user,
+	password	: sqlConfig.database.password,
+	port		: sqlConfig.database.port, 
+	database	: sqlConfig.database.db
+};
 app.use(sqlConnection(mysql, db, 'single'));
 ```
 strategies on express-myconnection app.use(sqlConnection(mysql, db, **'single'**));   
@@ -261,22 +258,91 @@ strategies on express-myconnection app.use(sqlConnection(mysql, db, **'single'**
 - request - creates new connection per each request, and automatically closes it at the response end.
 
 
+
 ### Starting Read Database
-Create movie.js on routers folder. It will be router for movie CRUD and add below code: 
+Create `movie.js` on routers folder. It will be router for movie CRUD and add below code: 
 ```
+var express = require('express');
+var router = express.Router();
 
+router.get('/', function(req, res, next){
+	req.getConnection(function(error, conn) {
+		if(error) {
+			console.log('Failed get connection \n\
+				error: ' + error);
+		} else {
+			console.log("Connected to mysql with database");
+		}
+		conn.query('SELECT * FROM movie ORDER BY id DESC', function(err, rows, fields) {
+			console.log('get movie');
+			if (err) {
+				req.flash('error', err);
+				res.render('movie/index', {
+					title: 'Movie List', 
+					data: ''
+				});
+			} else {
+				res.render('movie/index', {
+					title: 'Movie List', 
+					data: rows
+				});
+			}
+		});
+	});
+});
 
+module.exports = router;
 ```
+Then create new folder `movie` on `public/view` and create ejs file `index.ejs` in there. After that copy this code:
+```
+<%- include ../layouts/header.ejs %>
+	<body>
+		<div>Movie List</div>
+		<a href="/movie/add">Add</a>
+		<table>
+		    <tr style='text-align:left; background-color:#CCC'>
+		    	<th>No</th>
+		        <th>Name</th>
+		        <th>Synopsis</th>
+		        <th>Action</th>
+		    </tr>
+			<% if(data) { %>
+				<% data.forEach(function(d, key){ %>
+					<tr>
+						<td><%= key+1 %></td>
+						<td><%= d.name %></td>
+						<td><%= d.synopsis %></td>
+						<td>
+						<div style="float:left">
+						<a href='/movie/edit/<%= d.id %>'>Edit</a> &nbsp;                            
+						<form method="post" action="/movie/delete/<%= d.id %>" style="float:right">
+							<input type="submit" name="delete" value='Delete' onClick="return confirm('Are you sure you want to delete?')" />
+							<input type="hidden" name="_method" value="DELETE" />
+						</form>
+						</div>
+						</td>
+					</tr>
+				<% }) %>
+			<% } %>
+		</table>
+	</body>
+<%- include ../layouts/footer.ejs %>
+```
+You can read movie data from database in here.   
 
 
 
 ### Working with body-parser
-We need body-parser as middleware module to handle HTTP POST when read form input.   
+Before we continue with Create, Update, and Delete, we need body-parser as middleware module to handle HTTP POST when read form input.   
 body-parser is needed because we use Express version 4 above.   
 Install body-parser as shown below:
 ```
 npm install body-parser --save
 ```
+
+
+
+### Starting Create Data from MySQL
 
 
 

@@ -1,7 +1,5 @@
 var express = require('express');
 var router = express.Router();
-// var path = require('path');
-// var user = require(‘./controller/userController’);
 
 console.log('movie router');
 
@@ -50,7 +48,7 @@ router.get('/add', function(req, res, next){
 	});
 });
 
-//insert
+//proccess insert data
 router.post('/add', function(req, res, next){
 
 	//validating
