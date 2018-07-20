@@ -127,7 +127,7 @@ It will automatically restart application if have any change.
 We will use Expressjs to help us build website easier. We will also use Express' middleware such as session, validation, etc but later.   
 Install Express with below command:
 ```node
-npm install express --save
+npm install express@4.16.3 --save
 ```
 Open index.js and add below code at first line:
 ```js
@@ -155,7 +155,7 @@ Start node and try to open url `http://localhost:3000`
 EJS will help to generate HTML markup with plain JavaScript.   
 To download ejs, copy-paste below command:
 ```node
-npm install ejs --save
+npm install ejs@2.6.1 --save
 ```
 Edit index.js and add: 
 ```js
@@ -219,7 +219,7 @@ and create `footer.ejs` in layouts folder with below code:
 ### Working with Database
 First we must install MySQL:
 ```node
-npm install mysql --save
+npm install mysql@2.15.0 --save
 ```
 Create new database. I will name it rentaldisk
 ```mysql
@@ -257,7 +257,7 @@ Before setup database configuration on index.js, we need to install express-myco
 express-myconnection is Express' middleware to provides a consistent API for MySQL connections during request/response life cycle.   
 Install express-myconnection with shown command below:
 ```node
-npm install express-myconnection --save
+npm install express-myconnection@1.0.4 --save
 ```
 Open index.js and add below code:
 ```js
@@ -362,7 +362,7 @@ Before we continue with Create, Update, and Delete, we need body-parser as middl
 body-parser is needed because we use Express version 4 above.   
 Install body-parser as shown below:
 ```node
-npm install body-parser --save
+npm install body-parser@1.18.3 --save
 ```
 [^](#table-of-contents)      
 
