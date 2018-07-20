@@ -6,6 +6,14 @@ Build Node.js simple CRUD web application with MySQL
 * [Built With](#built-with)
 * [Starting with Node.js setup](#starting-with-nodejs-setup)
 * [Working with Nodemon](#working-with-nodemon)
+* [Working with Express](#working-with-express)
+* [Working with ejs](#working-with-ejs)
+* [Working with Database](#working-with-database)
+* [Starting Read Database](#starting-read-database)
+* [Working with body-parser](#working-with-body-parser)
+* [Starting Create Data](#starting-create-data)
+* [Starting Update Data](#starting-update-data)
+* [Starting Delete Data](#starting-delete-data)
 
 
 
@@ -14,12 +22,14 @@ Build Node.js simple CRUD web application with MySQL
 * [Nodemon](https://nodemon.io/) - A utility that will monitor for any changes in your source and automatically restart your server | version ^1.18.0
 * [MySQL](https://www.mysql.com/) - | version ^2.15.0
 * [Express](https://expressjs.com/) - A minimal and flexible Node.js web application framework that provides a robust set of features for web and mobile applications | version 4.16.3
-* [Express Validator](https://www.npmjs.com/package/express-validator) - | version 5.2.0
+* [Express Flash]() - | version 0.0.2
 * [Express Myconnection](https://www.npmjs.com/package/express-myconnection) - Connect/Express middleware provides a consistent API for MySQL connections during request/response life cycle | version 1.0.4
+* [Express Validator](https://www.npmjs.com/package/express-validator) - | version 5.2.0
+* [Express Session]() - | version 1.15.6
 * [EJS](http://ejs.co/) - A simple templating language that lets you generate HTML markup with plain JavaScript. | version 2.6.1
 * [body-parser](https://www.npmjs.com/package/body-parser) - Parse incoming request bodies in a middleware before your handlers, available under the req.body property | version 1.18.3  
-* [cookie-parser](https://www.npmjs.com/package/cookie-parser) - Parse Cookie header and populate req.cookies with an object keyed by the cookie names | version ^1.4.3
-[^](#table-of-contents)
+* [cookie-parser](https://www.npmjs.com/package/cookie-parser) - Parse Cookie header and populate req.cookies with an object keyed by the cookie names | version ^1.4.3   
+[^](#table-of-contents)   
 
 
 
@@ -65,7 +75,7 @@ and then run `node index.js`. You will see statement you logged:
 ```js
 Hello World
 ```
-[^](#table-of-contents)
+[^](#table-of-contents)   
 
 
 
@@ -110,7 +120,7 @@ After that, you can start the application by run command
 npm start
 ```
 It will automatically restart application if have any change.   
-[^](#table-of-contents)
+[^](#table-of-contents)   
 
 
 ### Working with Express
@@ -138,12 +148,12 @@ app.listen(3000,function(){
 });
 ```
 Start node and try to open url `http://localhost:3000`   
-[^](#table-of-contents)
+[^](#table-of-contents)   
 
 
 ### Working with ejs
 EJS will help to generate HTML markup with plain JavaScript.   
-To download EJS, copy-paste below command:
+To download ejs, copy-paste below command:
 ```node
 npm install ejs --save
 ```
@@ -202,7 +212,7 @@ and create `footer.ejs` in layouts folder with below code:
 </html>
 ```
 `<%= ... %>` will print every datas   
-[^](#table-of-contents)
+[^](#table-of-contents)   
 
 
 
@@ -267,13 +277,14 @@ strategies on express-myconnection app.use(sqlConnection(mysql, db, **'single'**
 - single - creates single database connection for an application instance. Connection is never closed. In case of disconnection it will try to reconnect again as described in node-mysql docs.
 - pool - creates pool of connections on an app instance level, and serves a single connection from pool per request. The connections is auto released to the pool at the response end.
 - request - creates new connection per each request, and automatically closes it at the response end.   
-[^](#table-of-contents)
+
+[^](#table-of-contents)   
 
 
 
 ### Starting Read Database
-Create `movie.js` on routers folder. It will be router for movie CRUD and add below code: 
-```
+Create `movie.js` on routers folder. It will be the router for movie CRUD and add below code: 
+```js
 var express = require('express');
 var router = express.Router();
 
@@ -305,8 +316,9 @@ router.get('/', function(req, res, next){
 
 module.exports = router;
 ```
+The code will create index route for movie page.   
 Then create new folder `movie` on `public/view` and create ejs file `index.ejs` in there. After that copy this code:
-```
+```html
 <%- include ../layouts/header.ejs %>
 	<body>
 		<div>Movie List</div>
@@ -341,7 +353,7 @@ Then create new folder `movie` on `public/view` and create ejs file `index.ejs` 
 <%- include ../layouts/footer.ejs %>
 ```
 You can read movie data from database in here.   
-[^](#table-of-contents)
+[^](#table-of-contents)   
 
 
 
@@ -349,39 +361,268 @@ You can read movie data from database in here.
 Before we continue with Create, Update, and Delete, we need body-parser as middleware module to handle HTTP POST when read form input.   
 body-parser is needed because we use Express version 4 above.   
 Install body-parser as shown below:
-```
+```node
 npm install body-parser --save
 ```
-[^](#table-of-contents)
+[^](#table-of-contents)      
 
 
 
-### Starting Create Data from MySQL
+### Starting Create Data
+First we will install some middlewares of Express, express-flash for flash error and success messages, express-session for storing flash message in session, express-validator for validate input form.   
+```node
+npm install express-flash@0.0.2 --save
+```
+```node
+npm install express-session@1.15.6 --save
+```
+```node
+npm install express-validator@5.2.0 --save
+```
+We also need cookie-parser module for activate cookie parsing.   
+```node
+npm install cookie-parser@1.4.3 --save
+```
+Back to `index.js` at root path, and call express' middlewares by adding this:
+```js
+var flash = require('express-flash');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+ 
+app.use(cookieParser('keyboard cat'))
+app.use(session({ 
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { maxAge: 60000 }
+}))
+app.use(flash());
+```
+Open `routers/movie.js`, then put this code:
+```js
+router.get('/add', function(req, res, next){
+	req.getConnection(function(error, conn) {
+		if(error) {
+			console.log('Failed get connection \n\
+				error: ' + error);
+		} else {
+			console.log("Connected to mysql with database");
+		};
+		res.render('movie/form', {
+			title: 'Add Movie',
+			data: '',
+			currentRoute: 'add'
+		});
+	});
+});
+```
+This route mean we will get datas from database and put them in form view.   
+Then, create new ejs file `form.ejs` for form view. We will use this as global form view because they use the same template. After than, copy this code: 
+```html
+<%- include ../layouts/header.ejs %>
+	<body>
+		
+		<% if (messages.error) { %>
+			<p style="color:red"><%- messages.error %></p>
+		<% } %>
+		<% if (messages.success) { %>
+			<p style="color:green"><%- messages.success %></p>
+		<% } %>
+
+		<% 
+			//create global form variable
+			var link = '/movie/add';
+			var method = 'POST';
+			var vname = '';
+			var vsynopsis = '';
+			if(currentRoute == 'edit') {
+				link = '/movie/edit/' + data.id;
+			}
+			if(data != '') {
+				vname = data.name;
+				vsynopsis = data.synopsis;
+			}
+		%>
+		<form method="<%= method %>" action="<%= link %>" name="crud_movie">
+			<div><input type="text" name="name" placeholder="Name" value="<%= vname %>" /></div>
+			<div><textarea name="synopsis" placeholder="synopsis"><%= vsynopsis %></textarea></div>
+			<% if(currentRoute == 'edit') { %>
+				<div><button>Update</button>
+			<% } else { %>
+				<div><button>Add</button>
+			<% } %>
+		</form>
+	
+	</body>
+<%- include ../layouts/footer.ejs %>
+```
+Take a look at this `messages.error` part, it's mean if we have error message, Express Validator will show them. Also take a look at code under comment `//create global form variable`, we will create some variables for globalisation.   
+Now back to `movie.js` we will do insert proccess:
+```js
+router.post('/add', function(req, res, next){
+
+	//validating
+	req.assert('name', 'Name is required').notEmpty();
+	req.assert('synopsis', 'Synopsis is required').notEmpty();
+
+	var errors = req.validationErrors();
+
+	if( !errors ) {
+		var rows = {
+			name: req.sanitize('name').escape().trim(),
+			synopsis: req.sanitize('synopsis').escape().trim()
+		};
+
+		req.getConnection(function(error, conn) {
+			if(error) {
+				console.log('Failed get connection \n\error: ' + error);
+			} else {
+				console.log("Connected to mysql with database");
+			};
+
+			conn.query('INSERT INTO movie SET ?', rows, function(err, result) {
+				if (err) {
+					req.flash('error', err);
+					res.render('movie/form', {
+						title: 'Add Movie',
+						data: rows,
+						currentRoute: 'add'
+					});
+				} else {
+					req.flash('success', 'Data added successfully!')
+					res.redirect('/movie');
+				}
+			});
+		});
+	} else {
+		var error_msg = ''
+		errors.forEach(function(error) {
+			error_msg += error.msg + '<br>'
+		});
+		req.flash('error', error_msg);
+		res.render('movie/form', {
+			title: 'Add Movie',
+			data: req.body,
+			currentRoute: 'add'
+		});
+	}
+});
+```   
+[^](#table-of-contents)   
 
 
 
+### Starting Update Data
+Open `movie.js`. We will create edit route for movie
+```js
+router.get('/edit/(:id)', function(req, res, next){
+	req.getConnection(function(error, conn) {
+		if(error) {
+			console.log('Failed get connection \n\
+				error: ' + error);
+		} else {
+			console.log("Connected to mysql with database");
+		};
+		conn.query('SELECT * FROM movie WHERE id = ' + req.params.id, function(err, rows, fields) {
+			if (rows.length <= 0) {
+				req.flash('error', 'Movie not found');
+				res.redirect('/movie');
+			} else {
+				res.render('movie/form', {
+					title: 'Edit Movie ' + rows[0]['name'],
+					data: rows[0],
+					currentRoute: 'edit'
+				});
+			};
+		});
+	});
+});
+```
+This route mean we will show selected datas from database and put them in form view.   
+We will skip form because they already mentioned on [Starting Create Data](#starting-create-data) section and continue with update proccess. You can copy below code:
+```js
+router.post('/edit/(:id)', function(req, res, next) {
+
+	//validating
+	req.assert('name', 'Name is required').notEmpty();
+	req.assert('synopsis', 'Synopsis is required').notEmpty();
+
+	var errors = req.validationErrors();
+
+	if( !errors ) {
+		var rows = {
+			name: req.sanitize('name').escape().trim(),
+			synopsis: req.sanitize('synopsis').escape().trim()
+		};
+
+		req.getConnection(function(error, conn) {
+			if(error) {
+				console.log('Failed get connection \n\
+					error: ' + error);
+			} else {
+				console.log("Connected to mysql with database");
+			};
+			conn.query('UPDATE movie SET ? WHERE id = ' + req.params.id, rows, function(err, result) {
+				if (err) {
+					req.flash('error', err);
+					res.render('movie/form', {
+						title: 'Edit Movie',
+						data: req.body,
+						currentRoute: 'edit'
+					});
+				} else {
+					req.flash('success', 'Data updated successfully!');
+					res.redirect('/movie');
+				};
+			});
+		});
+	} else {
+		var error_msg = '';
+		errors.forEach(function(error) {
+			error_msg += error.msg + '<br>';
+		});
+		req.flash('error', error_msg);
+
+		res.render('movie/form', {
+			title: 'Edit Movie',
+			data: req.body,
+			currentRoute: 'edit'
+		});
+	};
+});
+```   
+[^](#table-of-contents)   
 
 
 
+### Starting Delete Data
+Open `movie.js` and update with below code:
+```js
+router.post('/delete/(:id)', function(req, res, next) {
+	var row = { 
+		id: req.params.id
+	};
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	req.getConnection(function(error, conn) {
+		if(error) {
+			console.log('Failed get connection \n\
+				error: ' + error);
+		} else {
+			console.log("Connected to mysql with database");
+		};
+		conn.query('DELETE FROM movie WHERE id = ' + req.params.id, row, function(err, result) {
+			if (err) {
+				req.flash('error', err);
+				res.redirect('/movie');
+			} else {
+				req.flash('success', 'Data deleted successfully!');
+				res.redirect('/movie');
+			};
+		});
+	});
+});
+```   
+[^](#table-of-contents)   
 
 
 
@@ -399,9 +640,3 @@ npm install body-parser --save
 	when installing package, just ignore it. fsevents is a package for OS to allows applications to register for notifications of changes to a given directory tree tt is a very fast and lightweight alternative to kqueue.
 
 
-
----
-
-
-
-# **I WILL UPDATE README LATER** #

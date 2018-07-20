@@ -7,7 +7,6 @@ const app = express();
 var validator = require('express-validator')
 app.use(validator())
  
- 
 /**
  * body-parser module is used to read HTTP POST data
  * it's an express middleware that reads form's input 
@@ -22,8 +21,6 @@ var bodyParser = require('body-parser')
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-
-
 /**
  * This module shows flash messages
  * generally used to show success or error messages
@@ -32,7 +29,7 @@ app.use(bodyParser.json());
  * So, we also have to install and use 
  * cookie-parser & session modules
  */ 
-var flash = require('express-flash')
+var flash = require('express-flash');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
  
@@ -43,9 +40,7 @@ app.use(session({
     saveUninitialized: true,
     cookie: { maxAge: 60000 }
 }))
-app.use(flash())
-
-
+app.use(flash());
 
 var sqlConfig = require('./config/db');
 var mysql = require('mysql');
@@ -68,9 +63,11 @@ app.set('views', __dirname + '/public/views');
 
 //route
 var router = express.Router();
+
 console.log('call main router');
 var mainRouter = require('./routers/main');
 app.use('/', mainRouter);
+
 console.log('call movie router');
 var movieRouter = require('./routers/movie');
 app.use('/movie', movieRouter);
