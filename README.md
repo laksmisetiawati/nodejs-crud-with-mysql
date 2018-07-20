@@ -1,4 +1,3 @@
-# README #
 Build Node.js simple CRUD web application with MySQL   
 
 
@@ -13,6 +12,12 @@ Build Node.js simple CRUD web application with MySQL
 * [EJS](http://ejs.co/) - A simple templating language that lets you generate HTML markup with plain JavaScript. | version 2.6.1
 * [body-parser](https://www.npmjs.com/package/body-parser) - Parse incoming request bodies in a middleware before your handlers, available under the req.body property | version 1.18.3  
 * [cookie-parser](https://www.npmjs.com/package/cookie-parser) - Parse Cookie header and populate req.cookies with an object keyed by the cookie names | version ^1.4.3
+
+
+
+## Table of Contents
+* [Starting with Node.js setup](#starting-with-nodejs-setup)
+* [Working with Nodemon](#working-with-nodemon)
 
 
 
@@ -48,9 +53,9 @@ About to write to F:\test\nodejs\crud-with-mysql\package.json:
 
 Is this ok? (yes)
 ```
-text in '(...)' mean you are asked to use default. You can change it.     
+text in '(...)' mean you are asked to use default. You can change it.   
 Create a file called `index.js` to run node.   
-In the app.js that you just created, write some code e.g
+In the index.js that you just created, write some code e.g
 ```js
 console.log('Hello World')
 ```
@@ -65,7 +70,7 @@ Hello World
 We need Nodemon to make application keep running even we made change. So we do not need to restart it after we make change.   
 First, we have to install them by run below command:
 ```node
-npm install nodemon --save
+npm install nodemon@1.18.0 --save
 ```
 Once done, you need to create `nodemon.json` in main path and write below code:
 ```json
@@ -217,17 +222,17 @@ CREATE TABLE disk (
 Create new folder `config`, We will use this as configuration, then create `db.js` for MySQL configuration
 ```js
 var config = {
-    database: {
-        host        : 'localhost',
-        user        : 'yourusername',
-        password    : 'yourpasssword',
-        port        : 3306,
-        db          : 'rentaldisk'
-    },
-    server: {
-        host: '127.0.0.1',
-        port: '3000'
-    }
+	database: {
+		host		: 'localhost',
+		user		: 'yourusername',
+		password	: 'yourpasssword',
+		port		: 3306,
+		db			: 'rentaldisk'
+	},
+	server: {
+		host: '127.0.0.1',
+		port: '3000'
+	}
 }
 
 module.exports = config
@@ -300,12 +305,12 @@ Then create new folder `movie` on `public/view` and create ejs file `index.ejs` 
 		<div>Movie List</div>
 		<a href="/movie/add">Add</a>
 		<table>
-		    <tr style='text-align:left; background-color:#CCC'>
-		    	<th>No</th>
-		        <th>Name</th>
-		        <th>Synopsis</th>
-		        <th>Action</th>
-		    </tr>
+			<tr style='text-align:left; background-color:#CCC'>
+				<th>No</th>
+				<th>Name</th>
+				<th>Synopsis</th>
+				<th>Action</th>
+			</tr>
 			<% if(data) { %>
 				<% data.forEach(function(d, key){ %>
 					<tr>
@@ -314,7 +319,7 @@ Then create new folder `movie` on `public/view` and create ejs file `index.ejs` 
 						<td><%= d.synopsis %></td>
 						<td>
 						<div style="float:left">
-						<a href='/movie/edit/<%= d.id %>'>Edit</a> &nbsp;                            
+						<a href='/movie/edit/<%= d.id %>'>Edit</a> &nbsp;
 						<form method="post" action="/movie/delete/<%= d.id %>" style="float:right">
 							<input type="submit" name="delete" value='Delete' onClick="return confirm('Are you sure you want to delete?')" />
 							<input type="hidden" name="_method" value="DELETE" />
@@ -382,6 +387,14 @@ npm install body-parser --save
 	npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@1.2.4: wanted {"os":"darwin","arch":"any"} (current: {"os":"win32","arch":"x64"})
 	```
 	when installing package, just ignore it. fsevents is a package for OS to allows applications to register for notifications of changes to a given directory tree tt is a very fast and lightweight alternative to kqueue.
+
+
+
+---
+
+
+
+if you want to use this outsouce, please do `npm install` before test everything
 
 
 
