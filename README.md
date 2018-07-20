@@ -2,6 +2,13 @@ Build Node.js simple CRUD web application with MySQL
 
 
 
+## Table of Contents
+* [Built With](#built-with)
+* [Starting with Node.js setup](#starting-with-nodejs-setup)
+* [Working with Nodemon](#working-with-nodemon)
+
+
+
 ## Built With ##
 * [Node.js](https://nodejs.org/) - Cross-platform JavaScript run-time environment that executes JavaScript code server-side | version 5.6.0
 * [Nodemon](https://nodemon.io/) - A utility that will monitor for any changes in your source and automatically restart your server | version ^1.18.0
@@ -12,12 +19,7 @@ Build Node.js simple CRUD web application with MySQL
 * [EJS](http://ejs.co/) - A simple templating language that lets you generate HTML markup with plain JavaScript. | version 2.6.1
 * [body-parser](https://www.npmjs.com/package/body-parser) - Parse incoming request bodies in a middleware before your handlers, available under the req.body property | version 1.18.3  
 * [cookie-parser](https://www.npmjs.com/package/cookie-parser) - Parse Cookie header and populate req.cookies with an object keyed by the cookie names | version ^1.4.3
-
-
-
-## Table of Contents
-* [Starting with Node.js setup](#starting-with-nodejs-setup)
-* [Working with Nodemon](#working-with-nodemon)
+[^](#table-of-contents)
 
 
 
@@ -63,6 +65,7 @@ and then run `node index.js`. You will see statement you logged:
 ```js
 Hello World
 ```
+[^](#table-of-contents)
 
 
 
@@ -107,6 +110,7 @@ After that, you can start the application by run command
 npm start
 ```
 It will automatically restart application if have any change.   
+[^](#table-of-contents)
 
 
 ### Working with Express
@@ -134,6 +138,7 @@ app.listen(3000,function(){
 });
 ```
 Start node and try to open url `http://localhost:3000`   
+[^](#table-of-contents)
 
 
 ### Working with ejs
@@ -197,6 +202,7 @@ and create `footer.ejs` in layouts folder with below code:
 </html>
 ```
 `<%= ... %>` will print every datas   
+[^](#table-of-contents)
 
 
 
@@ -260,7 +266,8 @@ app.use(sqlConnection(mysql, db, 'single'));
 strategies on express-myconnection app.use(sqlConnection(mysql, db, **'single'**));   
 - single - creates single database connection for an application instance. Connection is never closed. In case of disconnection it will try to reconnect again as described in node-mysql docs.
 - pool - creates pool of connections on an app instance level, and serves a single connection from pool per request. The connections is auto released to the pool at the response end.
-- request - creates new connection per each request, and automatically closes it at the response end.
+- request - creates new connection per each request, and automatically closes it at the response end.   
+[^](#table-of-contents)
 
 
 
@@ -334,6 +341,7 @@ Then create new folder `movie` on `public/view` and create ejs file `index.ejs` 
 <%- include ../layouts/footer.ejs %>
 ```
 You can read movie data from database in here.   
+[^](#table-of-contents)
 
 
 
@@ -344,6 +352,7 @@ Install body-parser as shown below:
 ```
 npm install body-parser --save
 ```
+[^](#table-of-contents)
 
 
 
@@ -381,20 +390,13 @@ npm install body-parser --save
 
 
 ## Notes ###
+* If you want to use this outsouce, please do `npm install` before test everything
 * If you are on Windows and see below WARN:
 	```
 	npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@1.2.4 (node_modules\fsevents):
 	npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@1.2.4: wanted {"os":"darwin","arch":"any"} (current: {"os":"win32","arch":"x64"})
 	```
 	when installing package, just ignore it. fsevents is a package for OS to allows applications to register for notifications of changes to a given directory tree tt is a very fast and lightweight alternative to kqueue.
-
-
-
----
-
-
-
-if you want to use this outsouce, please do `npm install` before test everything
 
 
 
